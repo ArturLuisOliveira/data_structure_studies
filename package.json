@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "typescript": "^4.7.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.3"
+  },
+  "name": "data_structures",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT"
+}

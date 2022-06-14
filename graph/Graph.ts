@@ -58,7 +58,27 @@ export class Graph<Vertex> {
         callback(vertex)
       }
     }
+  }
 
+  depthFirstSearch({ callback, vertex }: { vertex: Vertex, callback: (vertex: Vertex) => void }) {
+    enum Status { Explored, Visited }
+    const statuses = new Map<Vertex, Status>()
+    const stack: Vertex[] = [vertex]
+    while (stack.length) {
+      console.count('count')
+      const vertex = stack.pop()
+      if (vertex && statuses.get(vertex) !== Status.Explored) {
+        const vertices = this._adjacencyList.get(vertex)
+        vertices?.forEach(vertex => {
+          if (statuses.get(vertex) !== Status.Explored && statuses.get(vertex) !== Status.Visited) {
+            stack.push(vertex)
+            statuses.set(vertex, Status.Visited)
+          }
+        })
+        statuses.set(vertex, Status.Explored)
+        callback(vertex)
+      }
+    }
   }
 
   toString() {

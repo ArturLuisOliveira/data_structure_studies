@@ -39,6 +39,28 @@ export class Graph<Vertex> {
     }
   }
 
+  breadthFirstSearch({ callback, vertex }: { vertex: Vertex, callback: (vertex: Vertex) => void }) {
+    enum Status { Explored, Visited }
+    const statuses = new Map<Vertex, Status>()
+    const queue: Vertex[] = [vertex]
+    while (queue.length) {
+      console.count('count')
+      const vertex = queue.shift()
+      if (vertex && statuses.get(vertex) !== Status.Explored) {
+        const vertices = this._adjacencyList.get(vertex)
+        vertices?.forEach(vertex => {
+          if (statuses.get(vertex) !== Status.Explored && statuses.get(vertex) !== Status.Visited) {
+            queue.push(vertex)
+            statuses.set(vertex, Status.Visited)
+          }
+        })
+        statuses.set(vertex, Status.Explored)
+        callback(vertex)
+      }
+    }
+
+  }
+
   toString() {
     let string: String = "";
     this.adjacencyList.forEach((value, key) => {
@@ -49,6 +71,6 @@ export class Graph<Vertex> {
         )}\n`
       );
     });
-    return string.substring(0, string.length -1);
+    return string.substring(0, string.length - 1);
   }
 }

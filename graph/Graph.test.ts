@@ -101,32 +101,33 @@ describe("graph", () => {
       graph.addEdge({ vertexA: "D", vertexB: "G" });
       graph.addEdge({ vertexA: "D", vertexB: "G" });
       graph.addEdge({ vertexA: "D", vertexB: "H" });
-      graph.addEdge({ vertexA: "E", vertexB: "L" });
+      graph.addEdge({ vertexA: "E", vertexB: "I" });
 
-      graph.breadthFirstSearch({ callback: (vertex) => console.log({ vertex }), vertex: 'H' })
+      graph.breadthFirstSearch({ callback: (vertex) => console.log({ vertex }), vertex: 'A' })
       expect(true).toBe(true);
     })
 
   })
 
-  describe('#depthFirstSearch', () => {
-    test('depth first search', () => {
+  describe('#shortestPath', () => {
+    /**
+     * A -
+     * 
+     */
+    test('should return the shortest path', () => {
       const graph = new Graph<string>({ isDirected: true });
 
       graph.addEdge({ vertexA: "A", vertexB: "B" });
       graph.addEdge({ vertexA: "A", vertexB: "C" });
       graph.addEdge({ vertexA: "A", vertexB: "D" });
       graph.addEdge({ vertexA: "B", vertexB: "E" });
-      graph.addEdge({ vertexA: "B", vertexB: "F" });
-      graph.addEdge({ vertexA: "C", vertexB: "G" });
+      graph.addEdge({ vertexA: "C", vertexB: "F" });
       graph.addEdge({ vertexA: "D", vertexB: "G" });
-      graph.addEdge({ vertexA: "D", vertexB: "G" });
-      graph.addEdge({ vertexA: "D", vertexB: "H" });
-      graph.addEdge({ vertexA: "E", vertexB: "L" });
+      graph.addEdge({ vertexA: "G", vertexB: "H" });
+      graph.addEdge({ vertexA: "F", vertexB: "E" });
+      graph.addEdge({ vertexA: "H", vertexB: "E" });
 
-      graph.breadthFirstSearch({ callback: (vertex) => console.log({ vertex }), vertex: 'A' })
-      expect(true).toBe(true);
+      expect(graph.shortestPath("A", "E")).toEqual(["A", "B", "E"])
     })
-
   })
 });

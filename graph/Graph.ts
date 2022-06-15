@@ -44,7 +44,6 @@ export class Graph<Vertex> {
     const statuses = new Map<Vertex, Status>()
     const queue: Vertex[] = [vertex]
     while (queue.length) {
-      console.count('count')
       const vertex = queue.shift()
       if (vertex && statuses.get(vertex) !== Status.Explored) {
         const vertices = this._adjacencyList.get(vertex)
@@ -60,26 +59,27 @@ export class Graph<Vertex> {
     }
   }
 
-  depthFirstSearch({ callback, vertex }: { vertex: Vertex, callback: (vertex: Vertex) => void }) {
-    enum Status { Explored, Visited }
-    const statuses = new Map<Vertex, Status>()
-    const stack: Vertex[] = [vertex]
-    while (stack.length) {
-      console.count('count')
-      const vertex = stack.pop()
-      if (vertex && statuses.get(vertex) !== Status.Explored) {
-        const vertices = this._adjacencyList.get(vertex)
-        vertices?.forEach(vertex => {
-          if (statuses.get(vertex) !== Status.Explored && statuses.get(vertex) !== Status.Visited) {
-            stack.push(vertex)
-            statuses.set(vertex, Status.Visited)
-          }
+  shortestPath(a: Vertex, b: Vertex) {
+    const pathAndCostMap = new Map<Vertex, { path?: Vertex, cost: number }>([[a, { cost: 0 }]])
+    let previous = a
+    this.breadthFirstSearch({
+      callback: (vertex) => {
+        this._adjacencyList.get(vertex)?.forEach(adjencent => {
+          if (!pathAndCostMap.get(adjencent)) pathAndCostMap.set(adjencent, { cost: (pathAndCostMap.get(vertex)?.cost ?? 0) + 1, path: vertex })
         })
-        statuses.set(vertex, Status.Explored)
-        callback(vertex)
-      }
+      },
+      vertex: a
+    })
+    const path = []
+    let next: Vertex | undefined = b
+    while (next) {
+      path.push(next)
+      next = pathAndCostMap.get(next)?.path
     }
+    return path.reverse()
   }
+
+
 
   toString() {
     let string: String = "";

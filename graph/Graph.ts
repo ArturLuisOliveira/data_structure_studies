@@ -33,7 +33,7 @@ export class Graph<Vertex> {
     }
     if (!this._adjacencyList.get(vertexA)?.includes(vertexB))
       this._adjacencyList.get(vertexA)?.push(vertexB);
-    if (this._isDirected) {
+    if (!this._isDirected) {
       if (!this._adjacencyList.get(vertexB)?.includes(vertexA))
         this._adjacencyList.get(vertexB)?.push(vertexA);
     }
@@ -112,15 +112,19 @@ export class Graph<Vertex> {
    * - Lists all vertises in a order which all the vertex who depends on another will be displayed after the vertex it depends on.
    * - Needs to be an DAG(Directed Acyclic Graph) graph.
    */
-  topologicalOrder(): Vertex[] { 
-    return [] 
+  topologicalOrder(): Vertex[] {
+    const topologicalOrder: Vertex[] = []
+
+    this.depthFirstSearch(vertex => topologicalOrder.push(vertex))
+
+    return topologicalOrder.reverse()
   }
 
   toString() {
     let string: String = "";
-    this.adjacencyList.forEach((value, key) => {
+    this.vertices.sort().forEach((vertex) => {
       string = string.concat(
-        `${key} ->${value.reduce(
+        `${vertex} ->${this.adjacencyList.get(vertex)?.sort().reduce(
           (acc, cur, index, values) => `${acc} ${cur}`,
           ""
         )}\n`

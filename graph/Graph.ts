@@ -79,7 +79,42 @@ export class Graph<Vertex> {
     return path.reverse()
   }
 
+  depthFirstSearch(callback: (vertex: Vertex) => void) {
+    enum Status { Explored, Discovered, Unvisited }
+    const stack: Vertex[] = []
+    const visitedStatusMap = new Map<Vertex, Status>()
 
+    this.vertices.forEach((vertex) => {
+      visitedStatusMap.set(vertex, Status.Unvisited)
+      stack.push(vertex)
+    })
+
+    const explore = (vertex: Vertex) => {
+      if (vertex) {
+        const status = visitedStatusMap.get(vertex)
+        if (status !== Status.Explored) {
+          callback(vertex)
+          visitedStatusMap.set(vertex, Status.Explored)
+          const adjancents = this._adjacencyList.get(vertex)
+          !!adjancents && adjancents
+            .filter(vertex => visitedStatusMap.get(vertex) === Status.Unvisited)
+            .forEach(vertex => visitedStatusMap.set(vertex, Status.Discovered))
+        }
+      }
+    }
+    while (stack.length) {
+      const vertex = stack.pop()
+      if (vertex) explore(vertex)
+    }
+  }
+
+  /**
+   * - Lists all vertises in a order which all the vertex who depends on another will be displayed after the vertex it depends on.
+   * - Needs to be an DAG(Directed Acyclic Graph) graph.
+   */
+  topologicalOrder(): Vertex[] { 
+    return [] 
+  }
 
   toString() {
     let string: String = "";

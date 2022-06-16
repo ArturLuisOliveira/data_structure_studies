@@ -79,33 +79,25 @@ export class Graph<Vertex> {
     return path.reverse()
   }
 
-  depthFirstSearch(callback: (vertex: Vertex) => void) {
-    enum Status { Explored, Discovered, Unvisited }
-    const stack: Vertex[] = []
-    const visitedStatusMap = new Map<Vertex, Status>()
+  depthFirstSearch({ callback, startVertex }: { callback: (vertex: Vertex) => void, startVertex?: Vertex }) {
 
-    this.vertices.forEach((vertex) => {
-      visitedStatusMap.set(vertex, Status.Unvisited)
-      stack.push(vertex)
-    })
+    //store initial state
+    const explorationMap = new Map<Vertex, boolean>()
+    this.vertices.map(vertex => explorationMap.set(vertex, false))
 
-    const explore = (vertex: Vertex) => {
+    const search = (vertex: Vertex) => {
       if (vertex) {
-        const status = visitedStatusMap.get(vertex)
-        if (status !== Status.Explored) {
+        if (!explorationMap.get(vertex)) {
+          explorationMap.set(vertex, true)
           callback(vertex)
-          visitedStatusMap.set(vertex, Status.Explored)
-          const adjancents = this._adjacencyList.get(vertex)
-          !!adjancents && adjancents
-            .filter(vertex => visitedStatusMap.get(vertex) === Status.Unvisited)
-            .forEach(vertex => visitedStatusMap.set(vertex, Status.Discovered))
+          this.adjacencyList.get(vertex)?.forEach((adjacent) => {
+            if (!explorationMap.get(adjacent)) search(adjacent)
+          })
         }
       }
     }
-    while (stack.length) {
-      const vertex = stack.pop()
-      if (vertex) explore(vertex)
-    }
+
+    search(startVertex ?? this.vertices[0])
   }
 
   /**
@@ -113,11 +105,8 @@ export class Graph<Vertex> {
    * - Needs to be an DAG(Directed Acyclic Graph) graph.
    */
   topologicalOrder(): Vertex[] {
-    const topologicalOrder: Vertex[] = []
 
-    this.depthFirstSearch(vertex => topologicalOrder.push(vertex))
-
-    return topologicalOrder.reverse()
+    return []
   }
 
   toString() {

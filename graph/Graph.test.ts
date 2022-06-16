@@ -225,7 +225,7 @@ describe("graph", () => {
       graph.addEdge({ vertexA: "E", vertexB: "I" });
       test('should return a depth first search', () => {
         const values: string[] = []
-        graph.depthFirstSearch((vertex) => values.push(vertex))
+        graph.depthFirstSearch({ callback: (vertex) => values.push(vertex) })
         expect(true).toBe(true)
       })
     })
@@ -243,7 +243,7 @@ describe("graph", () => {
         graph.addEdge({ vertexA: "D", vertexB: "H" });
         graph.addEdge({ vertexA: "E", vertexB: "I" });
         const values: string[] = []
-        graph.depthFirstSearch((vertex) => values.push(vertex))
+        graph.depthFirstSearch({ callback: (vertex) => values.push(vertex) })
         expect(true).toBe(true)
       })
     })
@@ -258,8 +258,11 @@ describe("graph", () => {
       graph.addEdge({ vertexA: "2", vertexB: "5" });
       graph.addEdge({ vertexA: "3", vertexB: "4" });
       graph.addEdge({ vertexA: "3", vertexB: "6" });
+      graph.addEdge({ vertexA: "4", vertexB: "5" });
+      graph.addEdge({ vertexA: "4", vertexB: "6" });
 
       const topologicalOrder = graph.topologicalOrder()
+
       expect(topologicalOrder[0]).toBe("1");
       ["2", "3"].forEach(vertex => {
         expect(topologicalOrder.indexOf(vertex)).toBeGreaterThanOrEqual(1)

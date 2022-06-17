@@ -262,7 +262,6 @@ describe("graph", () => {
       graph.addEdge({ vertexA: "4", vertexB: "6" });
 
       const topologicalOrder = graph.topologicalOrder()
-
       expect(topologicalOrder[0]).toBe("1");
       ["2", "3"].forEach(vertex => {
         expect(topologicalOrder.indexOf(vertex)).toBeGreaterThanOrEqual(1)

@@ -79,25 +79,41 @@ export class Graph<Vertex> {
     return path.reverse()
   }
 
-  depthFirstSearch({ callback, startVertex }: { callback: (vertex: Vertex) => void, startVertex?: Vertex }) {
+  depthFirstSearch({ callback }: { callback?: (vertex: Vertex) => void } = {}) {
+    enum Color { White, Gray, Black }
+    const color = new Map<Vertex, Color>()
+    const discovery = new Map<Vertex, number>()
+    const finished = new Map<Vertex, number>()
+    const predecessor = new Map<Vertex, Vertex | null>()
+    const time = { count: 0 }
 
-    //store initial state
-    const explorationMap = new Map<Vertex, boolean>()
-    this.vertices.map(vertex => explorationMap.set(vertex, false))
+    this.vertices.forEach(vertex => {
+      color.set(vertex, Color.White)
+      discovery.set(vertex, 0)
+      finished.set(vertex, 0)
+      predecessor.set(vertex, null)
+    })
 
-    const search = (vertex: Vertex) => {
-      if (vertex) {
-        if (!explorationMap.get(vertex)) {
-          explorationMap.set(vertex, true)
-          callback(vertex)
-          this.adjacencyList.get(vertex)?.forEach((adjacent) => {
-            if (!explorationMap.get(adjacent)) search(adjacent)
-          })
+    const visit = (vertex: Vertex) => {
+      color.set(vertex, Color.Gray)
+      discovery.set(vertex, ++time.count)
+      const neighbours = this.adjacencyList.get(vertex)
+      neighbours?.forEach(neighbour => {
+        if (color.get(neighbour) === Color.White) {
+          predecessor.set(neighbour, vertex)
+          visit(neighbour)
         }
-      }
+      })
+      callback && callback(vertex)
+      color.set(vertex, Color.Black)
+      finished.set(vertex, ++time.count)
     }
 
-    search(startVertex ?? this.vertices[0])
+    this.vertices.forEach(vertex => {
+      if (color.get(vertex) === Color.White) visit(vertex)
+    })
+
+    return { discovery, finished, predecessor }
   }
 
   /**
@@ -105,8 +121,15 @@ export class Graph<Vertex> {
    * - Needs to be an DAG(Directed Acyclic Graph) graph.
    */
   topologicalOrder(): Vertex[] {
+    const { finished } = this.depthFirstSearch()
+    const finishedArray: [Vertex, number][] = []
+    finished.forEach((value, key) => finishedArray.push([key, value]))
 
-    return []
+    return finishedArray.sort((a, b) => {
+      if (a[1] > b[1]) return 1
+      if (a[1] < b[1]) return -1
+      return 0
+    }).map(([key, value]) => key).reverse()
   }
 
   toString() {
